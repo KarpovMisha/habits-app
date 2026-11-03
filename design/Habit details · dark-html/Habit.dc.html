@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Habit details</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#5B4CF0}a:hover{color:#4335D6}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: {{t.bg}}; font-family: 'Nunito', system-ui, sans-serif; color: {{t.text}}; display: flex; flex-direction: column; padding: 56px 20px 32px; gap: 18px">
+  <div style="display: flex; justify-content: space-between; align-items: center">
+    <a href="{{nav.habits}}" aria-label="Back" style="width: 44px; height: 44px; border-radius: 14px; background: {{t.surface}}; display: flex; align-items: center; justify-content: center; color: {{t.text}}">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>
+    </a>
+    <a href="{{nav.newHabit}}" aria-label="Edit habit" style="width: 44px; height: 44px; border-radius: 14px; background: {{t.surface}}; display: flex; align-items: center; justify-content: center; color: {{t.text}}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>
+    </a>
+  </div>
+
+  <div style="background: {{t.heroBg}}; border-radius: 28px; padding: 22px; display: flex; align-items: center; gap: 16px">
+    <span style="width: 64px; height: 64px; border-radius: 20px; background: #5B4CF0; color: #FFFFFF; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10zM2 21c0-3 1.9-5.4 5.2-6"></path></svg>
+    </span>
+    <div style="display: flex; flex-direction: column; gap: 2px">
+      <h1 style="margin: 0; font-size: 26px; font-weight: 800">Meditate</h1>
+      <p style="margin: 0; font-size: 15px; font-weight: 600; color: {{t.heroSub}}">10 min in the morning · daily</p>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+    <div style="background: {{t.surface}}; border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 2px">
+      <span style="font-size: 24px; font-weight: 800; color: {{t.flame}}">21</span>
+      <span style="font-size: 13px; font-weight: 600; color: {{t.muted}}">Day streak</span>
+    </div>
+    <div style="background: {{t.surface}}; border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 2px">
+      <span style="font-size: 24px; font-weight: 800">21</span>
+      <span style="font-size: 13px; font-weight: 600; color: {{t.muted}}">Best streak</span>
+    </div>
+    <div style="background: {{t.surface}}; border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 2px">
+      <span style="font-size: 24px; font-weight: 800">26</span>
+      <span style="font-size: 13px; font-weight: 600; color: {{t.muted}}">Total days</span>
+    </div>
+  </div>
+
+  <div style="background: {{t.surface}}; border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+    <h2 style="margin: 0; font-size: 17px; font-weight: 800">October 2026</h2>
+    <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px">
+      <sc-for list="{{weekdays}}" as="w" hint-placeholder-count="7">
+        <span style="text-align: center; font-size: 12px; font-weight: 700; color: {{t.muted}}">{{w}}</span>
+      </sc-for>
+      <sc-for list="{{days}}" as="d" hint-placeholder-count="35">
+        <span style="height: 36px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; background: {{d.bg}}; color: {{d.fg}}; outline: {{d.ring}}; outline-offset: -2px">{{d.n}}</span>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1"></div>
+
+  <button type="button" style="min-height: 52px; border-radius: 16px; border: 2px solid {{t.dangerBorder}}; background: {{t.surface}}; color: {{t.danger}}; font-family: inherit; font-size: 16px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"></path></svg>
+    Delete habit
+  </button>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  tokens(dark) {
+    return dark ? {
+      bg: '#0F1117', surface: '#1A1D27', surface2: '#242836', text: '#F2F3F8', muted: '#A3A7BA', border: '#2C3040',
+      flame: '#FFA36B', danger: '#FF8FAA', dangerBorder: '#5A2433', heroBg: '#2E2766', heroSub: '#C9C1FF'
+    } : {
+      bg: '#F4F6FB', surface: '#FFFFFF', surface2: '#F4F6FB', text: '#1B1D2A', muted: '#6B6F80', border: '#E6E8F0',
+      flame: '#B5470A', danger: '#B0264F', dangerBorder: '#F3C2CF', heroBg: '#E5DCFF', heroSub: '#4A3FB8'
+    };
+  }
+  renderVals() {
+    var dark = (this.props.theme || 'light') === 'dark';
+    var t = this.tokens(dark);
+    var s = dark ? 'Dark' : '';
+    var nav = { habits: 'Habits' + s + '.dc.html', newHabit: 'NewHabit' + s + '.dc.html' };
+    var days = [];
+    for (var b = 0; b < 3; b++) days.push({ n: '', bg: 'transparent', fg: t.text, ring: 'none' });
+    var extra = { 1: 1, 2: 1, 3: 1, 5: 1, 6: 1 };
+    for (var i = 1; i <= 31; i++) {
+      var done = (i >= 9 && i <= 29) || extra[i];
+      var future = i > 29;
+      days.push({
+        n: String(i),
+        bg: done ? '#5B4CF0' : (future ? 'transparent' : t.surface2),
+        fg: done ? '#FFFFFF' : (future ? t.muted : t.text),
+        ring: i === 29 ? '3px solid #FFD84D' : 'none'
+      });
+    }
+    return { t: t, nav: nav, weekdays: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'], days: days };
+  }
+}
+</script>
+</body>
+</html>

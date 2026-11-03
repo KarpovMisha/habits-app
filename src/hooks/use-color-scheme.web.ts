@@ -14,7 +14,9 @@ export function useColorScheme() {
   const colorScheme = useRNColorScheme();
 
   if (hasHydrated) {
-    return colorScheme;
+    //TODO: temporary override until there's a theme switcher. 'unspecified' follows the system.
+    return 'light';
+    // return colorScheme;
   }
 
   return 'light';

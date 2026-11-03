@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Log in</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#5B4CF0}a:hover{color:#4335D6}
+input::placeholder{color:#7C8093}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #5B4CF0; font-family: 'Nunito', system-ui, sans-serif; color: {{t.text}}; display: flex; flex-direction: column">
+  <div style="padding: 80px 28px 36px; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; color: #FFFFFF">
+    <span style="width: 64px; height: 64px; border-radius: 20px; background: #FFD84D; color: #3A2E00; display: flex; align-items: center; justify-content: center">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>
+    </span>
+    <h1 style="margin: 0; font-size: 40px; font-weight: 800; letter-spacing: -1px">Habits</h1>
+    <p style="margin: 0; font-size: 18px; font-weight: 600; color: #E3DFFF">Small steps, every day</p>
+  </div>
+
+  <div style="flex-grow: 1; background: {{t.surface}}; border-radius: 32px 32px 0 0; padding: 24px 20px 32px; display: flex; flex-direction: column; gap: 18px">
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; background: {{t.surface2}}; padding: 4px; border-radius: 16px">
+      <button type="button" onClick="{{toLogin}}" style="min-height: 44px; border-radius: 12px; border: none; background: {{loginBg}}; color: {{loginFg}}; font-family: inherit; font-size: 15px; font-weight: 800; cursor: pointer">Log in</button>
+      <button type="button" onClick="{{toSignup}}" style="min-height: 44px; border-radius: 12px; border: none; background: {{signupBg}}; color: {{signupFg}}; font-family: inherit; font-size: 15px; font-weight: 800; cursor: pointer">Sign up</button>
+    </div>
+
+    <sc-if value="{{signup}}" hint-placeholder-val="{{false}}">
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <label for="lname" style="font-size: 14px; font-weight: 700">Name</label>
+        <input id="lname" type="text" placeholder="Your name" style="min-height: 52px; box-sizing: border-box; border-radius: 16px; border: 2px solid {{t.border}}; background: {{t.surface2}}; padding: 0 16px; font-family: inherit; font-size: 16px; font-weight: 600; color: {{t.text}}">
+      </div>
+    </sc-if>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="lemail" style="font-size: 14px; font-weight: 700">Email</label>
+      <input id="lemail" type="email" placeholder="you@example.com" style="min-height: 52px; box-sizing: border-box; border-radius: 16px; border: 2px solid {{t.border}}; background: {{t.surface2}}; padding: 0 16px; font-family: inherit; font-size: 16px; font-weight: 600; color: {{t.text}}">
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="lpass" style="font-size: 14px; font-weight: 700">Password</label>
+      <input id="lpass" type="password" placeholder="At least 8 characters" style="min-height: 52px; box-sizing: border-box; border-radius: 16px; border: 2px solid {{t.border}}; background: {{t.surface2}}; padding: 0 16px; font-family: inherit; font-size: 16px; font-weight: 600; color: {{t.text}}">
+    </div>
+
+    <sc-if value="{{login}}" hint-placeholder-val="{{true}}">
+      <a href="#" style="align-self: flex-end; font-size: 14px; font-weight: 700; text-decoration: none; min-height: 24px; color: {{t.link}}">Forgot password?</a>
+    </sc-if>
+
+    <div style="flex-grow: 1"></div>
+
+    <a href="{{nav.today}}" style="min-height: 56px; border-radius: 18px; background: #5B4CF0; color: #FFFFFF; font-size: 17px; font-weight: 800; display: flex; align-items: center; justify-content: center; text-decoration: none">{{cta}}</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  tokens(dark) {
+    return dark ? {
+      surface: '#1A1D27', surface2: '#242836', raised: '#353A4C', text: '#F2F3F8', muted: '#A3A7BA', border: '#2C3040', link: '#A99FFF'
+    } : {
+      surface: '#FFFFFF', surface2: '#F4F6FB', raised: '#FFFFFF', text: '#1B1D2A', muted: '#6B6F80', border: '#E6E8F0', link: '#5B4CF0'
+    };
+  }
+  renderVals() {
+    var self = this;
+    var dark = (this.props.theme || 'light') === 'dark';
+    var t = this.tokens(dark);
+    var s = dark ? 'Dark' : '';
+    var signup = !!(this.state && this.state.signup);
+    return {
+      t: t,
+      nav: { today: 'Main' + s + '.dc.html' },
+      signup: signup,
+      login: !signup,
+      cta: signup ? 'Create account' : 'Log in',
+      loginBg: signup ? 'transparent' : t.raised,
+      loginFg: signup ? t.muted : t.text,
+      signupBg: signup ? t.raised : 'transparent',
+      signupFg: signup ? t.text : t.muted,
+      toLogin: function () { self.setState({ signup: false }); },
+      toSignup: function () { self.setState({ signup: true }); }
+    };
+  }
+}
+</script>
+</body>
+</html>
