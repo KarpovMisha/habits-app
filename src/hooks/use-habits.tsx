@@ -7,6 +7,8 @@ type HabitsContextValue = {
   done: Record<string, boolean>;
   addHabit: (habit: Omit<Habit, 'id' | 'streak'>) => void;
   setDone: (id: string, value: boolean) => void;
+  updateHabit: (id: string, changes: Omit<Habit, 'id' | 'streak'>) => void;
+  removeHabit: (id: string) => void;
 };
 
 const HabitsContext = createContext<HabitsContextValue | null>(null);
@@ -25,7 +27,20 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
     setDoneState((prev) => ({ ...prev, [id]: value }));
   };
 
-  return <HabitsContext value={{ habits, done, addHabit, setDone }}>{children}</HabitsContext>;
+  const updateHabit: HabitsContextValue['updateHabit'] = (id, changes) => {
+    setHabits((prev) => prev.map((habit) => (habit.id === id ? { ...habit, ...changes } : habit)));
+  };
+
+  const removeHabit: HabitsContextValue['removeHabit'] = (id) => {
+    setHabits((prev) => prev.filter((habit) => habit.id !== id));
+    setDoneState(({ [id]: _, ...rest }) => rest);
+  };
+
+  return (
+    <HabitsContext value={{ habits, done, addHabit, setDone, updateHabit, removeHabit }}>
+      {children}
+    </HabitsContext>
+  );
 }
 
 export function useHabits() {
