@@ -1,5 +1,11 @@
 import { Image, type ImageSource } from 'expo-image';
-import { Tabs, TabList, TabTrigger, TabSlot, TabTriggerSlotProps } from 'expo-router/ui';
+import {
+  TabList,
+  Tabs,
+  TabSlot,
+  TabTrigger,
+  TabTriggerSlotProps,
+} from 'expo-router/ui';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -23,15 +29,23 @@ export default function AppTabs() {
             borderTopColor: colors.backgroundSelected,
             paddingBottom: Spacing.two + insets.bottom,
           },
-        ]}>
+        ]}
+      >
         <TabTrigger name="index" href="/" asChild>
-          <TabButton icon={require('@/assets/images/tabIcons/home.png')}>Home</TabButton>
+          <TabButton icon={require('@/assets/images/tabIcons/home.svg')}>
+            Home
+          </TabButton>
         </TabTrigger>
-        <TabTrigger name="explore" href="/explore" asChild>
-          <TabButton icon={require('@/assets/images/tabIcons/explore.png')}>Explore</TabButton>
+        <TabTrigger name="explore" href="/habit-details" asChild>
+          <TabButton icon={require('@/assets/images/tabIcons/list.svg')}>
+            Habits
+          </TabButton>
         </TabTrigger>
-        {/* Routable but without a button: no tab is highlighted while it's open. */}
-        <TabTrigger name="new-habit" href="/new-habit" style={styles.hidden} />
+        <TabTrigger name="explore" href="/profile" asChild>
+          <TabButton icon={require('@/assets/images/tabIcons/profile.svg')}>
+            Profile
+          </TabButton>
+        </TabTrigger>
       </TabList>
     </Tabs>
   );
@@ -40,14 +54,24 @@ export default function AppTabs() {
 type TabButtonProps = TabTriggerSlotProps & { icon: ImageSource };
 
 // `ref` is dropped: its type from TabTrigger doesn't match Pressable's ref type.
-export function TabButton({ children, isFocused, icon, ref, ...props }: TabButtonProps) {
+export function TabButton({
+  children,
+  isFocused,
+  icon,
+  ref,
+  ...props
+}: TabButtonProps) {
   const colors = useTheme();
   const color = isFocused ? colors.text : colors.textSecondary;
 
   return (
     <Pressable {...props} style={styles.tabButton}>
       <View
-        style={[styles.indicator, isFocused && { backgroundColor: colors.backgroundSelected }]}>
+        style={[
+          styles.indicator,
+          isFocused && { backgroundColor: colors.backgroundSelected },
+        ]}
+      >
         <Image source={icon} tintColor={color} style={styles.icon} />
       </View>
       <ThemedText type={isFocused ? 'smallBold' : 'small'} style={{ color }}>
@@ -80,8 +104,5 @@ const styles = StyleSheet.create({
   icon: {
     width: 24,
     height: 24,
-  },
-  hidden: {
-    display: 'none',
   },
 });

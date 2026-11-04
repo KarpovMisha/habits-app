@@ -3,10 +3,10 @@ import { StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 
-export default function NewHabitScreen() {
+export default function Profile() {
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="subtitle">New habit !</ThemedText>
+      <ThemedText type="subtitle">Profile</ThemedText>
     </ThemedView>
   );
 }

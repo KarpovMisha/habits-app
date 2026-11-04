@@ -11,7 +11,7 @@ export const Colors = {
   light: {
     text: '#000000',
     textInvert: '#ffffff',
-    background: '#ffffff',
+    background: '#f4f6fb',
     backgroundPrimary: '#5b4cf0',
     backgroundSelected: '#E0E1E6',
     textSecondary: '#6b6f80',
@@ -19,6 +19,8 @@ export const Colors = {
     surface: '#FFFFFF',
     unchecked: '#C9CCDA',
     flame: '#B5470A',
+    field: '#F4F5FA',
+    fieldBorder: '#E6E8F0',
   },
   dark: {
     text: '#ffffff',
@@ -31,6 +33,8 @@ export const Colors = {
     surface: '#1A1D27',
     unchecked: '#3A3F52',
     flame: '#FFA36B',
+    field: '#232634',
+    fieldBorder: '#2E3240',
   },
 } as const;
 

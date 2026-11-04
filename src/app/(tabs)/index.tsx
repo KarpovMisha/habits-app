@@ -6,13 +6,17 @@ import MyHabits from '@/components/home/my-habits';
 import ProgressCard from '@/components/home/progress-card';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { useHabits } from '@/hooks/use-habits';
 
 export default function HomeScreen() {
+  const { habits, done } = useHabits();
+  const doneCount = habits.filter((habit) => done[habit.id]).length;
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <HomeHero />
-        <ProgressCard done={3} total={5} />
+        <ProgressCard done={doneCount} total={habits.length} />
         <MyHabits />
       </SafeAreaView>
     </ThemedView>

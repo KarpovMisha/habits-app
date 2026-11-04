@@ -3,10 +3,10 @@ import { StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 
-export default function TabTwoScreen() {
+export default function HabitDetails() {
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="subtitle">Explore</ThemedText>
+      <ThemedText type="subtitle">Habit name</ThemedText>
     </ThemedView>
   );
 }
