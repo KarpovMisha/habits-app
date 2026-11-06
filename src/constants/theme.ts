@@ -21,6 +21,7 @@ export const Colors = {
     flame: '#B5470A',
     field: '#F4F5FA',
     fieldBorder: '#E6E8F0',
+    surfacePrimary: '#ffffff',
   },
   dark: {
     text: '#ffffff',
@@ -35,6 +36,7 @@ export const Colors = {
     flame: '#FFA36B',
     field: '#232634',
     fieldBorder: '#2E3240',
+    surfacePrimary: '#1a1d27',
   },
 } as const;
 

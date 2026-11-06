@@ -5,7 +5,11 @@ import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { fetchCompletions, setCompletion, toDateKey } from '@/api/habit-completions';
+import {
+  fetchCompletions,
+  setCompletion,
+  toDateKey,
+} from '@/api/habit-completions';
 import HabitCalendar from '@/components/habit-details/habit-calendar';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -56,7 +60,10 @@ type HabitDetailsViewProps = {
   onDelete: () => void;
 };
 
-export default function HabitDetailsView({ habit, onDelete }: HabitDetailsViewProps) {
+export default function HabitDetailsView({
+  habit,
+  onDelete,
+}: HabitDetailsViewProps) {
   const theme = useTheme();
   const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const [tint, ink] = Hues[habit.hue][scheme];
@@ -67,9 +74,13 @@ export default function HabitDetailsView({ habit, onDelete }: HabitDetailsViewPr
 
   useEffect(() => {
     let cancelled = false;
-    fetchCompletions(habit.id).then((keys) => {
-      if (!cancelled) setCompleted(new Set(keys));
-    });
+    fetchCompletions(habit.id)
+      .then((keys) => {
+        if (!cancelled) setCompleted(new Set(keys));
+      })
+      .catch((error) =>
+        console.warn('Failed to load completions:', error.message),
+      );
     return () => {
       cancelled = true;
     };
@@ -91,12 +102,18 @@ export default function HabitDetailsView({ habit, onDelete }: HabitDetailsViewPr
   };
 
   const stats = [
-    { label: 'Day streak', value: currentStreak(completed, today), color: theme.flame },
+    {
+      label: 'Day streak',
+      value: currentStreak(completed, today),
+      color: theme.flame,
+    },
     { label: 'Best streak', value: bestStreak(completed) },
     { label: 'All-time days', value: completed.size },
   ];
 
-  const subtitle = [habit.goal, scheduleLabel(habit.days)].filter(Boolean).join(' · ');
+  const subtitle = [habit.goal, scheduleLabel(habit.days)]
+    .filter(Boolean)
+    .join(' · ');
 
   return (
     <ThemedView style={styles.container}>
@@ -104,21 +121,34 @@ export default function HabitDetailsView({ habit, onDelete }: HabitDetailsViewPr
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.topBar}>
             <Pressable
-              onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
+              onPress={() =>
+                router.canGoBack() ? router.back() : router.replace('/')
+              }
               accessibilityRole="button"
               accessibilityLabel="Back"
-              style={[styles.iconButton, { backgroundColor: theme.surface }]}>
+              style={[styles.iconButton, { backgroundColor: theme.surface }]}
+            >
               <SymbolView
-                name={{ ios: 'chevron.left', android: 'chevron_left', web: 'chevron_left' }}
+                name={{
+                  ios: 'chevron.left',
+                  android: 'chevron_left',
+                  web: 'chevron_left',
+                }}
                 tintColor={theme.text}
                 size={20}
               />
             </Pressable>
             <Pressable
-              onPress={() => router.push({ pathname: '/edit-habit/[id]', params: { id: habit.id } })}
+              onPress={() =>
+                router.push({
+                  pathname: '/edit-habit/[id]',
+                  params: { id: habit.id },
+                })
+              }
               accessibilityRole="button"
               accessibilityLabel="Edit habit"
-              style={[styles.iconButton, { backgroundColor: theme.surface }]}>
+              style={[styles.iconButton, { backgroundColor: theme.surface }]}
+            >
               <SymbolView
                 name={{ ios: 'pencil', android: 'edit', web: 'edit' }}
                 tintColor={theme.text}
@@ -137,14 +167,21 @@ export default function HabitDetailsView({ habit, onDelete }: HabitDetailsViewPr
             </View>
             <View style={styles.heroText}>
               <ThemedText style={styles.name}>{habit.name}</ThemedText>
-              <ThemedText style={[styles.subtitle, { color: ink }]}>{subtitle}</ThemedText>
+              <ThemedText style={[styles.subtitle, { color: ink }]}>
+                {subtitle}
+              </ThemedText>
             </View>
           </View>
 
           <View style={styles.stats}>
             {stats.map((stat) => (
               <ThemedView key={stat.label} type="surface" style={styles.stat}>
-                <ThemedText style={[styles.statValue, stat.color && { color: stat.color }]}>
+                <ThemedText
+                  style={[
+                    styles.statValue,
+                    stat.color && { color: stat.color },
+                  ]}
+                >
                   {stat.value}
                 </ThemedText>
                 <ThemedText themeColor="textSecondary" style={styles.statLabel}>
@@ -154,7 +191,11 @@ export default function HabitDetailsView({ habit, onDelete }: HabitDetailsViewPr
             ))}
           </View>
 
-          <HabitCalendar today={today} completed={completed} onToggle={toggleDay} />
+          <HabitCalendar
+            today={today}
+            completed={completed}
+            onToggle={toggleDay}
+          />
 
           <Pressable
             onPress={onDelete}
@@ -163,13 +204,16 @@ export default function HabitDetailsView({ habit, onDelete }: HabitDetailsViewPr
               styles.deleteButton,
               { backgroundColor: theme.surface, borderColor: dangerTint },
               pressed && styles.pressed,
-            ]}>
+            ]}
+          >
             <SymbolView
               name={{ ios: 'trash', android: 'delete', web: 'delete' }}
               tintColor={dangerInk}
               size={20}
             />
-            <ThemedText style={[styles.deleteText, { color: dangerInk }]}>Delete habit</ThemedText>
+            <ThemedText style={[styles.deleteText, { color: dangerInk }]}>
+              Delete habit
+            </ThemedText>
           </Pressable>
         </ScrollView>
       </SafeAreaView>

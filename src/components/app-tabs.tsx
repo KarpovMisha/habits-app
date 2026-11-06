@@ -36,12 +36,12 @@ export default function AppTabs() {
             Home
           </TabButton>
         </TabTrigger>
-        <TabTrigger name="explore" href="/habit-details" asChild>
+        <TabTrigger name="habits" href="/habit-details" asChild>
           <TabButton icon={require('@/assets/images/tabIcons/list.svg')}>
             Habits
           </TabButton>
         </TabTrigger>
-        <TabTrigger name="explore" href="/profile" asChild>
+        <TabTrigger name="profile" href="/profile" asChild>
           <TabButton icon={require('@/assets/images/tabIcons/profile.svg')}>
             Profile
           </TabButton>

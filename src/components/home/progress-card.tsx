@@ -1,6 +1,10 @@
 import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -26,13 +30,11 @@ export default function ProgressCard({ done, total }: ProgressCardProps) {
   }));
 
   return (
-    <ThemedView type="backgroundPrimary" style={styles.container}>
-      <ThemedText themeColor="textInvert" style={styles.label}>
-        Done today
-      </ThemedText>
+    <ThemedView style={styles.container}>
+      <ThemedText style={styles.label}>Done today</ThemedText>
 
       <View style={styles.row}>
-        <ThemedText themeColor="textInvert" style={styles.statistic}>
+        <ThemedText style={styles.statistic}>
           {done} of {total}
         </ThemedText>
         <View style={styles.badge}>
@@ -52,9 +54,11 @@ const styles = StyleSheet.create({
     borderRadius: Spacing.four,
     padding: Spacing.four,
     gap: Spacing.two,
+    backgroundColor: '#5b4cf0',
   },
   label: {
     opacity: 0.8,
+    color: '#ffffff',
   },
   row: {
     flexDirection: 'row',
@@ -65,6 +69,7 @@ const styles = StyleSheet.create({
     fontSize: 36,
     lineHeight: 44,
     fontWeight: 800,
+    color: '#ffffff',
   },
   badge: {
     backgroundColor: '#ffd84d',

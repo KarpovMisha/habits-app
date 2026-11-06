@@ -2,14 +2,8 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { HabitsProvider } from '@/hooks/use-habits';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
-import { Appearance, Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
-// TODO: temporary override until there's a theme switcher. 'unspecified' follows the system.
-// react-native-web has no setColorScheme, so web always follows the browser.
-if (Platform.OS !== 'web') {
-  Appearance.setColorScheme('light');
-}
 
 export default function RootLayout() {
   const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
