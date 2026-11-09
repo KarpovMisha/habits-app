@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Checkbox } from '@/components/ui/checkbox';
-import { HabitIcons, Hues } from '@/constants/habits';
+import { HabitIcons, Hues, isScheduledOn } from '@/constants/habits';
 import { Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useHabits } from '@/hooks/use-habits';
@@ -13,7 +13,9 @@ import { useTheme } from '@/hooks/use-theme';
 
 export default function MyHabits() {
   const theme = useTheme();
-  const { habits, done, setDone } = useHabits();
+  const { habits: allHabits, done, setDone } = useHabits();
+  const today = new Date();
+  const habits = allHabits.filter((habit) => isScheduledOn(habit, today));
   const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
 
   return (
@@ -22,9 +24,13 @@ export default function MyHabits() {
 
       {habits.length === 0 && (
         <ThemedView type="surface" style={styles.empty}>
-          <ThemedText style={styles.name}>No habits yet</ThemedText>
+          <ThemedText style={styles.name}>
+            {allHabits.length === 0 ? 'No habits yet' : 'Nothing for today'}
+          </ThemedText>
           <ThemedText themeColor="textSecondary" style={styles.metaText}>
-            Tap + to add your first habit
+            {allHabits.length === 0
+              ? 'Tap + to add your first habit'
+              : 'No habits are scheduled for today'}
           </ThemedText>
         </ThemedView>
       )}

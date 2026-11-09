@@ -2,11 +2,11 @@ import type { ImageSource } from 'expo-image';
 
 // [tint, ink] for the icon tile, per color scheme.
 export const Hues = {
-  blue: { light: ['#CFE4FF', '#1D5FBF'], dark: ['#1C3557', '#8EC0FF'] },
+  blue: { light: ['#7a6cff', '#1D5FBF'], dark: ['#1C3557', '#8EC0FF'] },
   yellow: { light: ['#FFE8A3', '#8A5A00'], dark: ['#4A3A0E', '#FFD66B'] },
-  green: { light: ['#C9F2DE', '#12704A'], dark: ['#143D2C', '#6FE0A8'] },
-  violet: { light: ['#E5DCFF', '#5B4CF0'], dark: ['#2E2766', '#B3A8FF'] },
-  pink: { light: ['#FFD6E0', '#B0264F'], dark: ['#4A1A2A', '#FF8FB0'] },
+  green: { light: ['#e0a800', '#12704A'], dark: ['#143D2C', '#6FE0A8'] },
+  violet: { light: ['#7a6cff', '#5B4CF0'], dark: ['#2E2766', '#B3A8FF'] },
+  pink: { light: ['#e0457b', '#B0264F'], dark: ['#4A1A2A', '#FF8FB0'] },
 } as const;
 
 export const HabitIcons = {
@@ -32,3 +32,8 @@ export type Habit = {
   timeOfDay: (typeof TimesOfDay)[number];
   days: boolean[];
 };
+
+// `Date.getDay()` is Sunday-first, `Habit.days` is Monday-first.
+export function isScheduledOn(habit: Habit, date: Date) {
+  return habit.days[(date.getDay() + 6) % 7];
+}

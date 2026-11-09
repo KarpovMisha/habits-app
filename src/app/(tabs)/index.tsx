@@ -5,11 +5,14 @@ import HomeHero from '@/components/home/home-hero';
 import MyHabits from '@/components/home/my-habits';
 import ProgressCard from '@/components/home/progress-card';
 import { ThemedView } from '@/components/themed-view';
+import { isScheduledOn } from '@/constants/habits';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useHabits } from '@/hooks/use-habits';
 
 export default function HomeScreen() {
-  const { habits, done } = useHabits();
+  const { habits: allHabits, done } = useHabits();
+  const today = new Date();
+  const habits = allHabits.filter((habit) => isScheduledOn(habit, today));
   const doneCount = habits.filter((habit) => done[habit.id]).length;
 
   return (

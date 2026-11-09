@@ -6,6 +6,8 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
+  addDays,
+  currentStreak,
   fetchCompletions,
   setCompletion,
   toDateKey,
@@ -24,21 +26,6 @@ function scheduleLabel(days: boolean[]) {
   if (count === 5 && days.slice(0, 5).every(Boolean)) return 'weekdays';
   if (count === 2 && days[5] && days[6]) return 'weekends';
   return `${count}× a week`;
-}
-
-function addDays(date: Date, amount: number) {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + amount);
-}
-
-// Current streak counts back from today, or from yesterday if today isn't done yet.
-function currentStreak(completed: Set<string>, today: Date) {
-  let day = completed.has(toDateKey(today)) ? today : addDays(today, -1);
-  let streak = 0;
-  while (completed.has(toDateKey(day))) {
-    streak++;
-    day = addDays(day, -1);
-  }
-  return streak;
 }
 
 function bestStreak(completed: Set<string>) {
