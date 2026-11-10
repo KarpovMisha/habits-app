@@ -34,6 +34,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_config: {
+        Row: {
+          latest_version: string
+          min_version: string
+          platform: string
+          store_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          latest_version: string
+          min_version: string
+          platform: string
+          store_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          latest_version?: string
+          min_version?: string
+          platform?: string
+          store_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       completions: {
         Row: {
           created_at: string

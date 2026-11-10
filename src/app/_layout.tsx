@@ -1,3 +1,4 @@
+import AppUpdate from '@/components/app-update';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { HabitsProvider } from '@/hooks/use-habits';
@@ -32,6 +33,7 @@ export default function RootLayout() {
             <Stack.Screen name="new-habit" options={{ presentation: 'modal', headerShown: false }} />
             <Stack.Screen name="edit-habit/[id]" options={{ presentation: 'modal', headerShown: false }} />
           </Stack>
+          <AppUpdate />
         </ThemeProvider>
       </HabitsProvider>
     </GestureHandlerRootView>
