@@ -2,8 +2,8 @@ import { createContext, use, useEffect, useState, type ReactNode } from 'react';
 import { Alert, Linking } from 'react-native';
 
 import { fetchRemindersEnabled, setRemindersEnabled } from '@/api/profile';
+import { useAuth } from '@/hooks/use-auth';
 import { useHabits } from '@/hooks/use-habits';
-import { ensureSession } from '@/lib/supabase';
 import { requestReminderPermission, syncReminders } from '@/lib/reminders';
 
 type RemindersContextValue = {
@@ -17,11 +17,12 @@ const RemindersContext = createContext<RemindersContextValue | null>(null);
 export function RemindersProvider({ children }: { children: ReactNode }) {
   const { habits, done } = useHabits();
   const [enabled, setEnabledState] = useState<boolean | null>(null);
+  const userId = useAuth().session?.user.id;
 
   useEffect(() => {
+    if (!userId) return;
     let cancelled = false;
-    ensureSession()
-      .then(fetchRemindersEnabled)
+    fetchRemindersEnabled()
       .then((value) => {
         if (!cancelled) setEnabledState(value);
       })
@@ -31,7 +32,7 @@ export function RemindersProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [userId]);
 
   // Keeps scheduled notifications in line with habits and today's completions.
   useEffect(() => {

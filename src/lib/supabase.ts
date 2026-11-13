@@ -39,24 +39,3 @@ AppState.addEventListener('change', (state) => {
     supabase.auth.stopAutoRefresh();
   }
 });
-
-// Shared, so parallel callers on first launch don't create two anonymous users.
-let sessionPromise: ReturnType<typeof signInIfNeeded> | null = null;
-
-// Signs in anonymously on first launch, so every user has an id before any registration.
-export function ensureSession() {
-  sessionPromise ??= signInIfNeeded().catch((error) => {
-    sessionPromise = null;
-    throw error;
-  });
-  return sessionPromise;
-}
-
-async function signInIfNeeded() {
-  const { data } = await supabase.auth.getSession();
-  if (data.session) return data.session;
-
-  const { data: signIn, error } = await supabase.auth.signInAnonymously();
-  if (error) throw error;
-  return signIn.session;
-}

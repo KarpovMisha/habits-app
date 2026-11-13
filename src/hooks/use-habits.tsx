@@ -2,7 +2,8 @@ import { createContext, use, useEffect, useState, type ReactNode } from 'react';
 
 import { setCompletion, toDateKey } from '@/api/habit-completions';
 import type { Habit } from '@/constants/habits';
-import { ensureSession, supabase } from '@/lib/supabase';
+import { useAuth } from '@/hooks/use-auth';
+import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/database';
 
 type HabitRow = Database['public']['Tables']['habits']['Row'];
@@ -46,12 +47,14 @@ const HabitsContext = createContext<HabitsContextValue | null>(null);
 export function HabitsProvider({ children }: { children: ReactNode }) {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [done, setDoneState] = useState<Record<string, boolean>>({});
+  const userId = useAuth().session?.user.id;
 
+  // The provider is keyed by user in the root layout, so this only loads once per account.
   useEffect(() => {
+    if (!userId) return;
     let cancelled = false;
 
     (async () => {
-      await ensureSession();
       const today = toDateKey(new Date());
       const [habitsResult, doneResult] = await Promise.all([
         supabase.from('habits').select('*').order('created_at'),
@@ -72,7 +75,7 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [userId]);
 
   const addHabit: HabitsContextValue['addHabit'] = async (habit) => {
     // The database generates the id, so wait for the inserted row.
