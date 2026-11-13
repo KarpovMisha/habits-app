@@ -1,12 +1,12 @@
 import Constants from 'expo-constants';
-import { useState } from 'react';
-import { StyleSheet, Switch } from 'react-native';
+import { Platform, StyleSheet, Switch } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { setColorSchemeOverride } from '@/hooks/color-scheme-override';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useReminders } from '@/hooks/use-reminders';
 import { useTheme } from '@/hooks/use-theme';
 
 import SettingsRow from './settings-row';
@@ -14,25 +14,29 @@ import SettingsRow from './settings-row';
 export default function SettingsCard() {
   const theme = useTheme();
   const isDark = useColorScheme() === 'dark';
-  const [reminders, setReminders] = useState(true);
+  const reminders = useReminders();
 
   const trackColor = { false: theme.unchecked, true: theme.primary };
 
   return (
     <ThemedView type="surface" style={styles.card}>
-      <SettingsRow
-        icon={{ ios: 'bell', android: 'notifications', web: 'notifications' }}
-        label="Reminders"
-        divider
-        accessory={
-          <Switch
-            value={reminders}
-            onValueChange={setReminders}
-            trackColor={trackColor}
-            thumbColor="#ffffff"
-          />
-        }
-      />
+      {/* No local notifications on web. */}
+      {Platform.OS !== 'web' && (
+        <SettingsRow
+          icon={{ ios: 'bell', android: 'notifications', web: 'notifications' }}
+          label="Reminders"
+          divider
+          accessory={
+            <Switch
+              value={reminders.enabled ?? false}
+              disabled={reminders.enabled === null}
+              onValueChange={reminders.setEnabled}
+              trackColor={trackColor}
+              thumbColor="#ffffff"
+            />
+          }
+        />
+      )}
       <SettingsRow
         icon={{ ios: 'moon', android: 'dark_mode', web: 'dark_mode' }}
         label="Dark mode"

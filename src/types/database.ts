@@ -123,6 +123,24 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          reminders_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          reminders_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          reminders_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

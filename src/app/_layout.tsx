@@ -2,6 +2,7 @@ import AppUpdate from '@/components/app-update';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { HabitsProvider } from '@/hooks/use-habits';
+import { RemindersProvider } from '@/hooks/use-reminders';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -27,14 +28,16 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={styles.root}>
       <HabitsProvider>
-        <ThemeProvider value={navigationTheme}>
-          <Stack screenOptions={{ contentStyle: { backgroundColor: colors.background } }}>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="new-habit" options={{ presentation: 'modal', headerShown: false }} />
-            <Stack.Screen name="edit-habit/[id]" options={{ presentation: 'modal', headerShown: false }} />
-          </Stack>
-          <AppUpdate />
-        </ThemeProvider>
+        <RemindersProvider>
+          <ThemeProvider value={navigationTheme}>
+            <Stack screenOptions={{ contentStyle: { backgroundColor: colors.background } }}>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="new-habit" options={{ presentation: 'modal', headerShown: false }} />
+              <Stack.Screen name="edit-habit/[id]" options={{ presentation: 'modal', headerShown: false }} />
+            </Stack>
+            <AppUpdate />
+          </ThemeProvider>
+        </RemindersProvider>
       </HabitsProvider>
     </GestureHandlerRootView>
   );
