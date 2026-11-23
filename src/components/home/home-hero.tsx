@@ -4,11 +4,15 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { useAuth } from '@/hooks/use-auth';
 import { useTheme } from '@/hooks/use-theme';
 import { ThemedView } from '../themed-view';
 
 export default function HomeHero() {
   const theme = useTheme();
+  const { session } = useAuth();
+  const name = session?.user.user_metadata.name;
+
   return (
     <ThemedView style={styles.heroSection}>
       <View style={styles.heroText}>
@@ -20,7 +24,7 @@ export default function HomeHero() {
           Thursday, October 29
         </ThemedText>
         <ThemedText type="title" style={styles.title}>
-          Hi, Mykhailo
+          Hi, {name}
         </ThemedText>
       </View>
 

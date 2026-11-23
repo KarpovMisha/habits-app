@@ -191,11 +191,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'transparent',
     paddingVertical: 10,
-    paddingHorizontal: 18,
+    paddingHorizontal: 12,
   },
   chipText: {
-    fontSize: 15,
-    fontWeight: 700,
+    fontSize: 14,
+    fontWeight: 500,
   },
   empty: {
     alignItems: 'center',

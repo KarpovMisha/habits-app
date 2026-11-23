@@ -55,7 +55,8 @@ export default function MyHabits() {
                 <View style={[styles.iconTile, { backgroundColor: tint }]}>
                   <Image
                     source={HabitIcons[habit.icon]}
-                    svgVariables={{ '--stroke': ink }}
+                    // svgVariables={{ '--stroke': '#ffffff' }}
+                    tintColor={ink}
                     style={styles.icon}
                   />
                 </View>
@@ -66,6 +67,7 @@ export default function MyHabits() {
                     <Image
                       source={require('@/assets/images/flame.svg')}
                       svgVariables={{ '--stroke': theme.flame }}
+                      tintColor={theme.flame}
                       style={styles.flame}
                     />
                     <ThemedText

@@ -67,13 +67,73 @@ The app uses the **publishable** key. Never put the **secret** key in the app; i
 
 A phone or emulator can't reach `127.0.0.1` on your computer. Point the app at your computer's LAN IP instead, e.g. `http://192.168.1.10:55321`.
 
-### Hosted database (later)
+### Hosted database (supabase.com)
+
+The production backend is a hosted Supabase project. The schema comes from the same `supabase/migrations/` files as the local stack; data is never copied between them.
+
+Use the Homebrew `supabase` binary, not `npx supabase`: `npx` pulls CLI v3, which rejects the `[inbucket]` section of `supabase/config.toml`.
+
+#### First-time setup
+
+1. Create a project at [supabase.com](https://supabase.com) (Free plan). Save the **Database password**; `link` and `db push` ask for it. Forgot it? Reset it in **Project Settings → Database**.
+2. Link this repo to the project. The project ref is the ID in the dashboard URL: `supabase.com/dashboard/project/<ref>`.
+
+   ```bash
+   supabase login                     # Opens the browser to authenticate the CLI
+   supabase link --project-ref <ref>  # Stores the link in supabase/.temp (git-ignored)
+   ```
+
+3. Apply the schema:
+
+   ```bash
+   supabase db push --dry-run  # Preview which migrations will run
+   supabase db push            # Apply them
+   ```
+
+4. Repeat the auth settings in the dashboard under **Authentication**. `db push` only applies migrations; `config.toml` is not uploaded.
+
+   | Setting | Value |
+   |---|---|
+   | Sign In / Providers → Email | enabled |
+   | Sign In / Providers → Allow anonymous sign-ins | off |
+   | Sign In / Providers → Minimum password length | 8 |
+   | Sign In / Providers → Confirm email | off until custom SMTP is set up (see below) |
+   | URL Configuration → Site URL | `habitsapp://` |
+   | URL Configuration → Redirect URLs | `habitsapp://**` |
+
+   The built-in email service only delivers to members of your Supabase organization, a few emails per hour. Before inviting other users, set up custom SMTP (e.g. [Resend](https://resend.com), needs your own domain) in **Project Settings → Authentication → SMTP Settings**, then turn **Confirm email** on.
+
+#### Point the app at the hosted project
+
+Copy the **Project URL** and the **Publishable key** (`sb_publishable_...`) from **Project Settings → Data API / API Keys** into `.env.local`. Keep the local values commented out to switch back:
 
 ```bash
-supabase login              # Authenticate the CLI with your supabase.com account
-supabase link --project-ref <ref>  # Link this repo to a hosted Supabase project
-supabase db push            # Apply local migrations to the hosted database
+# Local
+# EXPO_PUBLIC_SUPABASE_URL=http://127.0.0.1:55321
+# EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+
+# Hosted
+EXPO_PUBLIC_SUPABASE_URL=https://<ref>.supabase.co
+EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
 ```
+
+`EXPO_PUBLIC_` values are inlined into the bundle, so restart with a cleared cache after changing them: `npx expo start -c`.
+
+`.env.local` is git-ignored and not available to EAS Build. For EAS builds, add the same variables with `eas env:create`.
+
+#### Changing the schema
+
+Make the change locally first, then ship it as a migration:
+
+```bash
+supabase db diff -f <name>  # Save changes made in local Studio as a migration (or write one with `supabase migration new <name>`)
+supabase db reset           # Optional: check the migrations apply cleanly from scratch
+supabase db push            # Apply new migrations to the hosted database
+```
+
+Never edit a migration that has already been pushed; add a new one instead.
+
+The Free plan pauses a project after a week without requests. Restore it from the dashboard; data is kept.
 
 ## Get a fresh project
 

@@ -2,12 +2,24 @@ import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { HabitIcons, Hues, TimesOfDay, WeekDays, type Habit } from '@/constants/habits';
+import {
+  HabitIcons,
+  Hues,
+  TimesOfDay,
+  WeekDays,
+  type Habit,
+} from '@/constants/habits';
 import { Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useTheme } from '@/hooks/use-theme';
@@ -37,7 +49,12 @@ type HabitFormProps = {
   onSubmit: (values: HabitFormValues) => void;
 };
 
-export default function HabitForm({ title, submitLabel, initial, onSubmit }: HabitFormProps) {
+export default function HabitForm({
+  title,
+  submitLabel,
+  initial,
+  onSubmit,
+}: HabitFormProps) {
   const theme = useTheme();
   const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const insets = useSafeAreaInsets();
@@ -46,15 +63,26 @@ export default function HabitForm({ title, submitLabel, initial, onSubmit }: Hab
   const [goal, setGoal] = useState(initial?.goal ?? '');
   const [icon, setIcon] = useState<Habit['icon']>(initial?.icon ?? 'water');
   const [hue, setHue] = useState<Habit['hue']>(initial?.hue ?? 'blue');
-  const [timeOfDay, setTimeOfDay] = useState<Habit['timeOfDay']>(initial?.timeOfDay ?? 'morning');
-  const [days, setDays] = useState<boolean[]>(() => initial?.days ?? WeekDays.map(() => true));
+  const [timeOfDay, setTimeOfDay] = useState<Habit['timeOfDay']>(
+    initial?.timeOfDay ?? 'morning',
+  );
+  const [days, setDays] = useState<boolean[]>(
+    () => initial?.days ?? WeekDays.map(() => true),
+  );
   const [focused, setFocused] = useState<'name' | 'goal' | null>(null);
 
   const canSubmit = name.trim().length > 0 && days.some(Boolean);
 
   const submit = () => {
     if (!canSubmit) return;
-    onSubmit({ name: name.trim(), goal: goal.trim(), icon, hue, timeOfDay, days });
+    onSubmit({
+      name: name.trim(),
+      goal: goal.trim(),
+      icon,
+      hue,
+      timeOfDay,
+      days,
+    });
   };
 
   const fieldStyle = (field: 'name' | 'goal') => [
@@ -71,16 +99,21 @@ export default function HabitForm({ title, submitLabel, initial, onSubmit }: Hab
       <View style={[styles.handle, { backgroundColor: theme.fieldBorder }]} />
 
       <ScrollView
-        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing.four }]}
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: insets.bottom + Spacing.four },
+        ]}
         keyboardShouldPersistTaps="handled"
-        automaticallyAdjustKeyboardInsets>
+        automaticallyAdjustKeyboardInsets
+      >
         <View style={styles.header}>
           <ThemedText style={styles.title}>{title}</ThemedText>
           <Pressable
             onPress={() => router.back()}
             accessibilityRole="button"
             accessibilityLabel="Close"
-            style={[styles.closeButton, { backgroundColor: theme.field }]}>
+            style={[styles.closeButton, { backgroundColor: theme.field }]}
+          >
             <SymbolView
               name={{ ios: 'xmark', android: 'close', web: 'close' }}
               tintColor={theme.text}
@@ -136,10 +169,11 @@ export default function HabitForm({ title, submitLabel, initial, onSubmit }: Hab
                     selected
                       ? { backgroundColor: tint, borderColor: ink }
                       : { backgroundColor: theme.field },
-                  ]}>
+                  ]}
+                >
                   <Image
                     source={HabitIcons[key]}
-                    svgVariables={{ '--stroke': selected ? ink : theme.text }}
+                    tintColor={selected ? ink : theme.text}
                     style={styles.iconImage}
                   />
                 </Pressable>
@@ -184,11 +218,16 @@ export default function HabitForm({ title, submitLabel, initial, onSubmit }: Hab
                   accessibilityState={{ selected }}
                   style={[
                     styles.segment,
-                    selected && [styles.segmentSelected, { backgroundColor: theme.surface }],
-                  ]}>
+                    selected && [
+                      styles.segmentSelected,
+                      { backgroundColor: theme.surface },
+                    ],
+                  ]}
+                >
                   <ThemedText
                     themeColor={selected ? 'text' : 'textSecondary'}
-                    style={styles.segmentText}>
+                    style={styles.segmentText}
+                  >
                     {TimeLabels[time]}
                   </ThemedText>
                 </Pressable>
@@ -210,12 +249,24 @@ export default function HabitForm({ title, submitLabel, initial, onSubmit }: Hab
               return (
                 <Pressable
                   key={index}
-                  onPress={() => setDays((prev) => prev.map((d, i) => (i === index ? !d : d)))}
+                  onPress={() =>
+                    setDays((prev) =>
+                      prev.map((d, i) => (i === index ? !d : d)),
+                    )
+                  }
                   accessibilityRole="checkbox"
                   accessibilityState={{ checked: selected }}
-                  style={[styles.day, { backgroundColor: selected ? theme.primary : theme.field }]}>
+                  style={[
+                    styles.day,
+                    { backgroundColor: selected ? theme.primary : theme.field },
+                  ]}
+                >
                   <ThemedText
-                    style={[styles.dayText, { color: selected ? '#ffffff' : theme.textSecondary }]}>
+                    style={[
+                      styles.dayText,
+                      { color: selected ? '#ffffff' : theme.textSecondary },
+                    ]}
+                  >
                     {day}
                   </ThemedText>
                 </Pressable>
@@ -233,7 +284,8 @@ export default function HabitForm({ title, submitLabel, initial, onSubmit }: Hab
             { backgroundColor: theme.primary },
             !canSubmit && styles.disabled,
             pressed && styles.pressed,
-          ]}>
+          ]}
+        >
           <ThemedText style={styles.createText}>{submitLabel}</ThemedText>
         </Pressable>
       </ScrollView>

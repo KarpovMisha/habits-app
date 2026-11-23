@@ -36,6 +36,7 @@ export default function HabitCard({ habit, streak }: HabitCardProps) {
             <Image
               source={HabitIcons[habit.icon]}
               svgVariables={{ '--stroke': ink }}
+              tintColor={ink}
               style={styles.icon}
             />
           </View>
@@ -52,7 +53,7 @@ export default function HabitCard({ habit, streak }: HabitCardProps) {
           <View style={[styles.streak, { backgroundColor: theme.flameTint }]}>
             <Image
               source={require('@/assets/images/flame.svg')}
-              svgVariables={{ '--stroke': theme.flame }}
+              tintColor={theme.flame}
               style={styles.flame}
             />
             <ThemedText style={[styles.streakText, { color: theme.flame }]}>

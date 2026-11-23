@@ -149,6 +149,7 @@ export default function HabitDetailsView({
               <Image
                 source={HabitIcons[habit.icon]}
                 svgVariables={{ '--stroke': tint }}
+                tintColor={tint}
                 style={styles.heroIconImage}
               />
             </View>

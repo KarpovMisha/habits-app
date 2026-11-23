@@ -66,10 +66,17 @@ export function TabButton({
 
   return (
     <Pressable {...props} style={styles.tabButton}>
+      {/* Always-present background + collapsable={false}: on Android the view is otherwise
+          flattened while unfocused and loses borderRadius when re-created with a background. */}
       <View
+        collapsable={false}
         style={[
           styles.indicator,
-          isFocused && { backgroundColor: colors.backgroundSelected },
+          {
+            backgroundColor: isFocused
+              ? colors.backgroundSelected
+              : 'transparent',
+          },
         ]}
       >
         <Image source={icon} tintColor={color} style={styles.icon} />
