@@ -18,7 +18,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.habitsapp"
+      "package": "com.mkarpov.habits"
     },
     "web": {
       "output": "server",
@@ -41,11 +41,25 @@
           "defaultChannel": "reminders",
           "enableRemoteNotifications": false
         }
-      ]
+      ],
+      "expo-status-bar",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/2eddf786-4126-4c7a-b718-c3b8d4bd8aa4"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2eddf786-4126-4c7a-b718-c3b8d4bd8aa4"
+      }
+    },
+    "owner": "mkarpov"
   }
 }

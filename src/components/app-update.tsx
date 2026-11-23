@@ -1,4 +1,6 @@
 import { SymbolView } from 'expo-symbols';
+import * as Updates from 'expo-updates';
+import { useState } from 'react';
 import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -8,14 +10,19 @@ import { Spacing } from '@/constants/theme';
 import { useAppUpdate } from '@/hooks/use-app-update';
 import { useTheme } from '@/hooks/use-theme';
 
-// Rendered over the whole app: a blocking screen below `min_version`, a dismissible
-// banner below `latest_version`, nothing otherwise.
+// Rendered over the whole app: a blocking screen below `min_version`, a banner to restart
+// once an over-the-air update (EAS Update) has downloaded, a banner below `latest_version`
+// for changes that need a new APK, nothing otherwise.
 export default function AppUpdate() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { status, latestVersion, storeUrl, dismiss } = useAppUpdate();
+  // expo-updates checks on launch and downloads in the background; always false on web and in dev.
+  const { isUpdatePending } = Updates.useUpdates();
+  const [otaDismissed, setOtaDismissed] = useState(false);
+  const showOta = isUpdatePending && !otaDismissed && status !== 'required';
 
-  if (status === 'none') return null;
+  if (status === 'none' && !showOta) return null;
 
   const openStore = () => {
     if (storeUrl) Linking.openURL(storeUrl);
@@ -59,19 +66,36 @@ export default function AppUpdate() {
     );
   }
 
+  // The OTA update wins over the APK banner: it applies with one tap, no download.
+  const banner = showOta
+    ? {
+        title: 'Update ready',
+        subtitle: 'Restart to get the latest changes',
+        action: 'Restart',
+        onAction: () => Updates.reloadAsync(),
+        onLater: () => setOtaDismissed(true),
+      }
+    : {
+        title: 'New version available',
+        subtitle: `Version ${latestVersion} is out`,
+        action: 'Update',
+        onAction: storeUrl ? openStore : null,
+        onLater: dismiss,
+      };
+
   return (
     <ThemedView
       type="surface"
       style={[styles.banner, { top: insets.top + Spacing.two }]}
     >
       <View style={styles.bannerText}>
-        <ThemedText style={styles.bannerTitle}>New version available</ThemedText>
+        <ThemedText style={styles.bannerTitle}>{banner.title}</ThemedText>
         <ThemedText themeColor="textSecondary" style={styles.bannerSubtitle}>
-          Version {latestVersion} is out
+          {banner.subtitle}
         </ThemedText>
       </View>
       <Pressable
-        onPress={dismiss}
+        onPress={banner.onLater}
         accessibilityRole="button"
         style={({ pressed }) => [styles.laterButton, pressed && styles.pressed]}
       >
@@ -79,9 +103,9 @@ export default function AppUpdate() {
           Later
         </ThemedText>
       </Pressable>
-      {!!storeUrl && (
+      {banner.onAction && (
         <Pressable
-          onPress={openStore}
+          onPress={banner.onAction}
           accessibilityRole="button"
           style={({ pressed }) => [
             styles.updateButton,
@@ -90,7 +114,7 @@ export default function AppUpdate() {
           ]}
         >
           <ThemedText style={[styles.buttonText, styles.onPrimary]}>
-            Update
+            {banner.action}
           </ThemedText>
         </Pressable>
       )}
