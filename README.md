@@ -119,7 +119,7 @@ EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
 
 `EXPO_PUBLIC_` values are inlined into the bundle, so restart with a cleared cache after changing them: `npx expo start -c`.
 
-`.env.local` is git-ignored and not available to EAS Build. For EAS builds, add the same variables with `eas env:create`.
+`.env.local` is git-ignored and not available to EAS Build or EAS Update. Their values live in the EAS `preview` environment instead (`npx eas-cli@latest env:list --environment preview`).
 
 #### Changing the schema
 
@@ -134,6 +134,55 @@ supabase db push            # Apply new migrations to the hosted database
 Never edit a migration that has already been pushed; add a new one instead.
 
 The Free plan pauses a project after a week without requests. Restore it from the dashboard; data is kept.
+
+## Releasing the Android app (without Google Play)
+
+The app is installed from an APK built by [EAS Build](https://docs.expo.dev/build/introduction/) and updated over the air by [EAS Update](https://docs.expo.dev/eas-update/introduction/). Both run on the free Expo plan. EAS project: [@mkarpov/habits-app](https://expo.dev/accounts/mkarpov/projects/habits-app).
+
+Run EAS CLI as `npx eas-cli@latest <command>`. Log in once with `npx eas-cli@latest login`.
+
+| Config | Where |
+|---|---|
+| Build profile `preview`: APK, internal distribution, channel `preview`, auto-incremented `versionCode` | `eas.json` |
+| `runtimeVersion` (policy `appVersion`) and the update URL | `app.json` |
+| Supabase URL and publishable key for builds and updates | EAS environment `preview` |
+| Versions the app compares against (`latest_version`, `min_version`, `store_url`) | `app_config` table in hosted Supabase |
+
+### Which kind of release?
+
+| What changed | Release |
+|---|---|
+| JS/TS only: screens, styles, logic, assets | **OTA update**: no new APK |
+| Native: a package with native code, `app.json`, icon/splash, Expo SDK upgrade | **New APK** + bump `version` |
+
+`runtimeVersion` equals `version` in `app.json`. An OTA update only reaches APKs with the same `version`, so an update that needs new native code can never land on an APK that lacks it. When unsure, ship a new APK.
+
+### OTA update (most changes)
+
+```bash
+npx eas-cli@latest update --channel preview --environment preview --message "Short description"
+```
+
+The app checks for updates on launch and downloads them in the background. The banner **Update ready → Restart** applies the update immediately; otherwise it applies on the next cold start.
+
+Roll back a bad update: `npx eas-cli@latest update:republish` with an earlier group, or from the project's **Updates** page on expo.dev.
+
+### New APK (native changes)
+
+1. Bump `version` in `app.json` (e.g. `1.0.0` → `1.1.0`). `versionCode` increments by itself.
+2. Build:
+
+   ```bash
+   npx eas-cli@latest build --platform android --profile preview
+   ```
+
+   Takes ~10–20 minutes on the free queue. The result page on expo.dev has an **Install** link and QR code.
+3. In hosted Supabase, **Table Editor → app_config → android** row: set `latest_version` to the new version and `store_url` to the build's install link. Every older APK now shows **New version available → Update**.
+4. To force the update (e.g. the old version breaks against a changed schema), also set `min_version`. Older APKs then show a blocking **Update required** screen.
+
+### Installing on a phone
+
+Open the build's install link on the phone, download the APK and open it. Android asks once to allow installs from the browser. A new APK installs over the old one and keeps the data, as long as it is signed with the same key; EAS stores the keystore, so builds from this project always are.
 
 ## Get a fresh project
 
