@@ -12,6 +12,7 @@ export type ThemedTextProps = TextProps & {
     | 'subtitle'
     | 'link'
     | 'linkPrimary'
+    | 'big'
     | 'code';
   themeColor?: ThemeColor;
 };
@@ -34,9 +35,14 @@ export function ThemedText({
 
 const styles = StyleSheet.create({
   small: {
-    fontSize: 14,
+    fontSize: 12,
     lineHeight: 20,
     fontWeight: 500,
+  },
+  big: {
+    fontSize: 30,
+    fontWeight: 600,
+    lineHeight: 52,
   },
   smallBold: {
     fontSize: 14,

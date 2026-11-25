@@ -1,5 +1,46 @@
 import { supabase } from '@/lib/supabase';
 
+import { isScheduledOn, type Habit } from '@/constants/habits';
+
+export type Period = 'week' | 'month' | 'year';
+
+export function periodStart(period: Period, today: Date) {
+  if (period === 'week') return addDays(today, -((today.getDay() + 6) % 7)); // monday
+  if (period === 'month')
+    return new Date(today.getFullYear(), today.getMonth(), 1);
+  return new Date(today.getFullYear(), 0, 1);
+}
+
+export async function fetchCompletionsBetween(from: string, to: string) {
+  const { data, error } = await supabase
+    .from('completions')
+    .select('habit_id, date')
+    .gte('date', from)
+    .lte('date', to);
+  if (error) throw error;
+  return data;
+}
+
+export function completionRate(
+  habits: Habit[],
+  rows: { habit_id: string; date: string }[],
+  from: Date,
+  to: Date,
+): number | null {
+  const done = new Set(rows.map((r) => `${r.habit_id}|${r.date}`));
+  let scheduled = 0;
+  let completed = 0;
+  for (let day = from; day <= to; day = addDays(day, 1)) {
+    const key = toDateKey(day);
+    for (const habit of habits) {
+      if (!isScheduledOn(habit, day)) continue;
+      scheduled++;
+      if (done.has(`${habit.id}|${key}`)) completed++;
+    }
+  }
+  return scheduled ? Math.round((completed / scheduled) * 100) : null;
+}
+
 export function toDateKey(date: Date) {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
@@ -31,7 +72,9 @@ export async function fetchCompletions(habitId: string): Promise<string[]> {
 }
 
 // Completed dates for every habit, keyed by habit id.
-export async function fetchAllCompletions(): Promise<Record<string, Set<string>>> {
+export async function fetchAllCompletions(): Promise<
+  Record<string, Set<string>>
+> {
   const { data, error } = await supabase
     .from('completions')
     .select('habit_id, date');

@@ -148,37 +148,83 @@ Run EAS CLI as `npx eas-cli@latest <command>`. Log in once with `npx eas-cli@lat
 | Supabase URL and publishable key for builds and updates | EAS environment `preview` |
 | Versions the app compares against (`latest_version`, `min_version`, `store_url`) | `app_config` table in hosted Supabase |
 
-### Which kind of release?
+### Which release do I need?
 
-| What changed | Release |
-|---|---|
-| JS/TS only: screens, styles, logic, assets | **OTA update**: no new APK |
-| Native: a package with native code, `app.json`, icon/splash, Expo SDK upgrade | **New APK** + bump `version` |
+| What changed | Scenario | Docker needed | New APK |
+|---|---|---|---|
+| Screens, styles, logic, JS/TS packages, images | [1. Code or styles](#1-code-or-styles-ota-update) | no | no |
+| Database: new table, column, policy, function | [2. Database](#2-database-changes) | yes | no, unless native code changes too |
+| Native code: a package with native code, `app.json`, icon/splash, Expo SDK upgrade | [3. New APK](#3-new-apk-version) | no | yes |
 
-`runtimeVersion` equals `version` in `app.json`. An OTA update only reaches APKs with the same `version`, so an update that needs new native code can never land on an APK that lacks it. When unsure, ship a new APK.
+`runtimeVersion` equals `version` in `app.json`, and an OTA update only reaches APKs with the same `version`. So never bump `version` for scenario 1: the update would skip every installed APK. When unsure whether a change is native, ship a new APK.
 
-### OTA update (most changes)
+Before any release, on `main`:
 
 ```bash
-npx eas-cli@latest update --channel preview --environment preview --message "Short description"
+npx tsc --noEmit
+npx expo lint
+git commit ...
 ```
 
-The app checks for updates on launch and downloads them in the background. The banner **Update ready → Restart** applies the update immediately; otherwise it applies on the next cold start.
+### 1. Code or styles (OTA update)
 
-Roll back a bad update: `npx eas-cli@latest update:republish` with an earlier group, or from the project's **Updates** page on expo.dev.
+1. Make the change and check it with `npx expo start`.
+2. Typecheck, lint, commit.
+3. Publish the update:
 
-### New APK (native changes)
+   ```bash
+   npx eas-cli@latest update --channel preview --environment preview --message "What changed"
+   ```
 
-1. Bump `version` in `app.json` (e.g. `1.0.0` → `1.1.0`). `versionCode` increments by itself.
-2. Build:
+4. On the phone, close and reopen the app. It downloads the update in the background and shows **Update ready → Restart**; otherwise the update applies on the next cold start.
+
+Roll back a bad update from the project's **Updates** page on expo.dev, or with `npx eas-cli@latest update:republish` and an earlier group.
+
+### 2. Database changes
+
+The installed app talks to the hosted database the moment `db push` runs, before it gets any new code. So:
+
+- **Only add**: new tables, new nullable columns or columns with a default. The old app ignores them.
+- **Don't rename or drop** in the same release. First ship app code that no longer uses the old column, then remove it in a later migration. If it can't wait, force the update with `min_version` (scenario 3, step 6).
+- **New tables need row-level security** and policies in the migration, or the app can't read them (or anyone can).
+
+Steps:
+
+1. Start the local stack: `supabase start` (Docker must be running).
+2. Point the app at it: in `.env.local`, uncomment the local values and comment out the hosted ones. Restart with `npx expo start -c`.
+3. Change the schema, either:
+   - in local Studio (http://127.0.0.1:55323), then `supabase db diff -f <name>` to save it as a migration, or
+   - by hand: `supabase migration new <name>` and write the SQL in the new file.
+4. Check the migrations apply from scratch: `supabase db reset` (deletes local data).
+5. Update the app code that uses the new schema and test it against the local stack.
+6. Switch `.env.local` back to the hosted values and restart with `npx expo start -c`.
+7. Apply the schema to the hosted database:
+
+   ```bash
+   supabase db push --dry-run  # Should list only the new migration
+   supabase db push
+   ```
+
+8. Commit the migration and the code together, then release the code: scenario 1 (OTA), or scenario 3 if native code changed too.
+9. Optionally stop Docker: `supabase stop` (local data is kept).
+
+### 3. New APK version
+
+1. Make the change and check it. Native packages need a development build to run locally (`npx expo run:android`); Expo Go and the installed APK don't have them.
+2. Bump `version` in `app.json` (e.g. `1.0.0` → `1.1.0`). `versionCode` increments by itself on EAS.
+3. Typecheck, lint, commit.
+4. Build:
 
    ```bash
    npx eas-cli@latest build --platform android --profile preview
    ```
 
-   Takes ~10–20 minutes on the free queue. The result page on expo.dev has an **Install** link and QR code.
-3. In hosted Supabase, **Table Editor → app_config → android** row: set `latest_version` to the new version and `store_url` to the build's install link. Every older APK now shows **New version available → Update**.
-4. To force the update (e.g. the old version breaks against a changed schema), also set `min_version`. Older APKs then show a blocking **Update required** screen.
+   Takes ~10–20 minutes on the free queue. The build page on expo.dev has an **Install** link and QR code. The APK already contains all the code, so no `eas update` is needed for this version.
+5. In hosted Supabase, **Table Editor → app_config → android** row: set `latest_version` to the new version and `store_url` to the build page link. Older APKs now show **New version available → Update**.
+6. To force the update (e.g. the old version breaks against a changed schema), also set `min_version` to the new version. Older APKs then show a blocking **Update required** screen.
+7. On the phone: open the old app, tap **Update**, download and install the APK over it. Data is kept.
+
+Later OTA updates (scenario 1) reach only APKs with the new `version`.
 
 ### Installing on a phone
 
