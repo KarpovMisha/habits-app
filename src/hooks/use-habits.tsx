@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/database';
 
 type HabitRow = Database['public']['Tables']['habits']['Row'];
-type HabitValues = Omit<Habit, 'id' | 'streak'>;
+type HabitValues = Omit<Habit, 'id' | 'streak' | 'archivedAt'>;
 
 function fromRow(row: HabitRow): Habit {
   return {
