@@ -11,6 +11,7 @@ type HabitValues = Omit<Habit, 'id' | 'streak'>;
 
 function fromRow(row: HabitRow): Habit {
   return {
+    archivedAt: row.archived_at,
     id: row.id,
     name: row.name,
     goal: row.goal,
@@ -35,9 +36,11 @@ function toRow(values: HabitValues) {
 
 type HabitsContextValue = {
   habits: Habit[];
+  archivedHabits: Habit[];
   done: Record<string, boolean>;
   addHabit: (habit: HabitValues) => void;
   setDone: (id: string, value: boolean) => void;
+  setArchived: (id: string, archived: boolean) => void;
   updateHabit: (id: string, changes: HabitValues) => void;
   removeHabit: (id: string) => void;
 };
@@ -45,7 +48,9 @@ type HabitsContextValue = {
 const HabitsContext = createContext<HabitsContextValue | null>(null);
 
 export function HabitsProvider({ children }: { children: ReactNode }) {
-  const [habits, setHabits] = useState<Habit[]>([]);
+  const [allHabits, setHabits] = useState<Habit[]>([]);
+  const habits = allHabits.filter((habit) => !habit.archivedAt); // active
+  const archivedHabits = allHabits.filter((habit) => habit.archivedAt);
   const [done, setDoneState] = useState<Record<string, boolean>>({});
   const userId = useAuth().session?.user.id;
 
@@ -88,6 +93,23 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
     setHabits((prev) => [...prev, fromRow(data)]);
   };
 
+  const setArchived = async (id: string, archived: boolean) => {
+    // 1. Value for the database: current time in ISO format or null.
+    const archivedAt = archived ? new Date().toISOString() : null;
+
+    // 2. Update the local state immediately so that the UI refreshes without waiting for the server.
+    setHabits((prev) =>
+      prev.map((habit) => (habit.id === id ? { ...habit, archivedAt } : habit)),
+    );
+
+    // 3. Sending to Supabase: UPDATE habits SET archived_at = ... WHERE id = ...
+    const { error } = await supabase
+      .from('habits')
+      .update({ archived_at: archivedAt })
+      .eq('id', id);
+    if (error) console.warn('Failed to archive habit:', error.message);
+  };
+
   const updateHabit: HabitsContextValue['updateHabit'] = async (
     id,
     changes,
@@ -119,7 +141,16 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
 
   return (
     <HabitsContext
-      value={{ habits, done, addHabit, setDone, updateHabit, removeHabit }}
+      value={{
+        habits,
+        archivedHabits,
+        done,
+        addHabit,
+        setDone,
+        updateHabit,
+        setArchived,
+        removeHabit,
+      }}
     >
       {children}
     </HabitsContext>

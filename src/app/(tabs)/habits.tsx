@@ -19,13 +19,13 @@ const NoCompletions = new Set<string>();
 
 export default function HabitsScreen() {
   const theme = useTheme();
-  const { habits } = useHabits();
+  const { habits, archivedHabits } = useHabits();
   const [filter, setFilter] = useState<Filter>('all');
   const [today, setToday] = useState(() => new Date());
   const [completions, setCompletions] = useState<Record<string, Set<string>>>(
     {},
   );
-
+  console.log(archivedHabits);
   // Completions change on other screens, so reload whenever this tab is shown.
   useFocusEffect(
     useCallback(() => {

@@ -89,6 +89,7 @@ export type Database = {
       }
       habits: {
         Row: {
+          archived_at: string | null
           created_at: string
           days: boolean[]
           goal: string
@@ -100,6 +101,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          archived_at?: string | null
           created_at?: string
           days?: boolean[]
           goal?: string
@@ -111,6 +113,7 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          archived_at?: string | null
           created_at?: string
           days?: boolean[]
           goal?: string

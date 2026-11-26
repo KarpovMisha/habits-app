@@ -8,7 +8,7 @@ import { useHabits } from '@/hooks/use-habits';
 
 export default function HabitDetails() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { habits, removeHabit } = useHabits();
+  const { habits, removeHabit, setArchived } = useHabits();
   const habit = habits.find((h) => h.id === id);
 
   if (!habit) {
@@ -26,6 +26,10 @@ export default function HabitDetails() {
       <Stack.Screen options={{ headerShown: false }} />
       <HabitDetailsView
         habit={habit}
+        onArchive={() => {
+          if (!habit.archivedAt) router.back();
+          setArchived(habit.id, !habit.archivedAt);
+        }}
         onDelete={() => {
           router.back();
           removeHabit(habit.id);

@@ -39,7 +39,7 @@ function repeatLabel(days: boolean[]) {
   return `${count} ${count === 1 ? 'day' : 'days'} a week`;
 }
 
-export type HabitFormValues = Omit<Habit, 'id' | 'streak'>;
+export type HabitFormValues = Omit<Habit, 'id' | 'streak' | 'archivedAt'>;
 
 type HabitFormProps = {
   title: string;

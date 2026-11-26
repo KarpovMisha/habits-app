@@ -44,12 +44,14 @@ function bestStreak(completed: Set<string>) {
 
 type HabitDetailsViewProps = {
   habit: Habit;
+  onArchive: () => void;
   onDelete: () => void;
 };
 
 export default function HabitDetailsView({
   habit,
   onDelete,
+  onArchive,
 }: HabitDetailsViewProps) {
   const theme = useTheme();
   const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
@@ -185,6 +187,24 @@ export default function HabitDetailsView({
             onToggle={toggleDay}
           />
 
+          <Pressable
+            onPress={onArchive}
+            accessibilityRole="button"
+            style={({ pressed }) => [
+              styles.deleteButton,
+              { backgroundColor: theme.surface, borderColor: dangerTint },
+              pressed && styles.pressed,
+            ]}
+          >
+            <Image
+              source={require('@/assets/images/archive.svg')}
+              tintColor={dangerInk}
+              style={{ width: 20, height: 20 }}
+            />
+            <ThemedText style={[styles.deleteText, { color: dangerInk }]}>
+              {habit.archivedAt ? 'Restore' : 'Archive'}
+            </ThemedText>
+          </Pressable>
           <Pressable
             onPress={onDelete}
             accessibilityRole="button"

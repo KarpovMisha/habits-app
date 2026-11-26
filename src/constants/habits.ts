@@ -23,6 +23,7 @@ export const TimesOfDay = ['morning', 'afternoon', 'evening'] as const;
 export const WeekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'] as const;
 
 export type Habit = {
+  archivedAt: string | null;
   id: string;
   name: string;
   goal: string;
