@@ -20,7 +20,9 @@ export default function AppTabs() {
 
   return (
     <Tabs style={styles.root}>
-      <TabSlot />
+      {/* TabSlot only grows by default (flex-basis auto), so on web a tall screen pushes the
+          tab bar off-screen instead of scrolling. Give it the remaining height. */}
+      <TabSlot style={styles.slot} />
       <TabList
         style={[
           styles.tabList,
@@ -95,6 +97,9 @@ export function TabButton({
 
 const styles = StyleSheet.create({
   root: {
+    flex: 1,
+  },
+  slot: {
     flex: 1,
   },
   tabList: {
