@@ -5,6 +5,7 @@ import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { currentStreak, fetchAllCompletions } from '@/api/habit-completions';
+import ArchivedCard from '@/components/habits/archived-card';
 import HabitCard from '@/components/habits/habit-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -25,7 +26,7 @@ export default function HabitsScreen() {
   const [completions, setCompletions] = useState<Record<string, Set<string>>>(
     {},
   );
-  console.log(archivedHabits);
+
   // Completions change on other screens, so reload whenever this tab is shown.
   useFocusEffect(
     useCallback(() => {
@@ -141,6 +142,9 @@ export default function HabitsScreen() {
             );
           }}
         />
+        {archivedHabits.length > 0 && (
+          <ArchivedCard count={archivedHabits.length} />
+        )}
       </SafeAreaView>
     </ThemedView>
   );

@@ -68,6 +68,7 @@ function RootNavigator() {
             <Stack.Protected guard={signedIn}>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="habit/[id]" />
+              <Stack.Screen name="archived" options={{ title: 'Archived' }} />
               <Stack.Screen
                 name="new-habit"
                 options={{ presentation: 'modal', headerShown: false }}
